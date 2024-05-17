@@ -1,0 +1,72 @@
+section 13 - events, mensajeria entre ms.
+
+kafka , broker de mensajeria ,
+kafka recibe msj, los 'almacena' y envia.
+
+Un cluster(cjto de brokers, parte gral de kafka) tiene Un broker puede tener varios topics, y los topics pueden tener varias particiones.
+el broker es intermediario entre prod y cons, es un bus de mensajes
+
+topic(es como una tabla de DB), que tipo de mensaje s tiene (fallos, mensj ok, etc)
+
+los topics se dividen en particiones, ya que pueden manejarse millones de datos en tal topic(kafka es un sistema distribuido)
+
+[cluster --> broker --> topic --> particiones]
+
+el consumidor lee el broker y a su vez el topic para acceder al msj
+
+--
+
+docker-compose para kafka
+
+gestionador de cluster es ZOOKEEPER
+en Orderservice, se agrega dependencia kafka
+
+el ida y vuelta de msg se hara mediante peticiones a zookeeper
+zookeeper envia id de brokers a prod y consum.
+
+Orderservice : se agrega den app.properties--> spring.kafka.***
+			  -se agrega KafkaTemplate con @Autowired
+			   -kafkatemplate.send('NombreTopic',new OrderPlaceevent(message));  //ese OrderPlaceevent es una clase custom, tambien usado en Notif-MS
+			   
+			   
+Nuevo Ms, Notification-Service , el que se encargara de recuperar mensaje de cola
+
+en Notificacion-MS, la app.properties sera spring.kafka.consumer** y demas cambios(en key y value)
+ en tal main, se creara un handler handlerNotification(OrderPlacevent), con @KafkaListener(topics='NombreTopic') , el cual se usa para consumir
+
+docker-compose:
+keyloack-mysql, donde se guardaran usuarios
+		
+luego de ejecutar el docker-compose, se debe crear el realm en keyloack, el cual se configuro en app.properties de api-gateway:
+spring-boot-microservices-realm
+luego, voy a postman, oauth2 y copio spring-cloud-client(llamado asi en el curso) del postman y lo pego en el nuevo client de keyloack
+al avanzar de la creacion de cliente en keyloack, dejo habilitado 'client authentication' y 'service account roles' --> save
+copiamos el 'credentials' y pegamo en postman(client-secret)
+
+prueba:
+en localhost:8083/api/producto , creamos un nuevo token 'Get new access token' y le damos a 'usar token'
+pegamos al endpoint anterior y vemos que trae los resultados ok.
+
+notificacion-consumidor  --OK
+
+--prueba real:
+ejecuto docker compose, sin olvidar loguearme(probar igual sin loguear)'docker login --username migue.centellas@gmail.com'
+
+
+
+--
+servicios a levantar para prueba keyloack
+
+discovery
+apigateway
+Producto
+Order
+Inventario
+Notification
+
+
+
+git merge --abort
+
+
+

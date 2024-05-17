@@ -1,0 +1,117 @@
+--45  implementacion servicio producto
+
+codigo Sku String
+17:35 created database orderSevice
+
+--46 
+creacion servicio inventario(comproba si producto esta en stock o no)
+
+en mysqlworkbench:
+
+CREATE DATABASE inventario_service
+
+en el main, inicia InventarioDePrueba
+@bean
+commandLineRunner
+
+--47 comunicacio de servicios con webClient( posee una interfaz comun para solicitudes http y no es bloqueante[quiere decir que no necesita esperar que la anterior peticion se acabe], con respecto a rest Template
+											, se usa en programacion reactiva)
+
+Orderservice consume a InventarioService pero de manera asincrona.
+
+placeOrder de Orderservice tiene la llamada webclient en modo Mono
+
+usa allMatch en coleccion(stream)
+
+--48 Discovery Server - EUREKA
+
+Cuando se agrega la dependencia de eureka en todos los ms, no olvidar tambien agregar de spring cloud
+
+--49 registrando resgitros con multiples intancias
+
+@Loadbalance
+WebClient.Builder
+OrdenService , allow multiple instance
+
+eureka.instance.instanceid en OrdenService, app.properties
+
+--50 implmentacion api gateway
+
+filtros de ms de cada servicio, hecho en app.properties
+
+
+
+++++++ section 10
+
+keyloack, gestion de usuarios. keyloack es muy pesado, se usara docker.
+
+se corre con docker, usuaio: admin ; password:admin
+
+creamos un Realm en keyloack
+al crearlo, vamos a cliente -> new cliente:
+1- clientId:spring-cloud-client
+2- client Authentication : ON,
+
+luego, en pestaña 'credentials' se puede ver clave, por ej: iHc462LmdkoAHkrzFmAwcA5KdGUTx3HH
+
+
+class SecurityCOnfig en 'ApiGateway'
+para habilitar @EnabeWebFluxSecurity , hay que agregar dependencias springsecurity y OAuth2
+
+OAuth- protocolo Autorizacion(Roles).verifica identidad de usuarios y provee tokens de acceso
+
+agregar keyloack en apiGaetway
+spring.security.oauth2 ****
+
+hay que ir a keyloack, luego a realmSetting( de clientId:spring-cloud-client),
+busco el de issue, en este caso 'http://localhost:8080/realms/spring-boot-microservicios-real' y lo pego en la app.propertie, relacionado con resourceServer.jwt.ussuer-uri
+
+Para la prueba en postman, en authorization, esta vez se usara OAUTH y se debe cambiar varias keys de tal opcion(MINUTO 15:00)
+
+
+
+55-Impleentamdo Login al servidor de EUREKA
+
+se crea clase Config en Eureka o Discovery-server , tambien setea user y password en memoria para luego solicitarlo(*)
+se actuaiza ap.propertie:
+	app.eureka.**
+	
+tambien se actualiza los app.properties de otros servicios:
+  eureka.client.serviceUrl.defaultZone= **
+ 
+al entrar a Eureka(prueba) me pide user y pass en memoria-lo pedido en (*)
+
+
+
+---section 11-	
+
+56- Tolerancia a fallos 
+
+OrderService MS
+ver app.properties, agrega claves de feign, circuitbreaker y demas, ta,bien registro de salud health.
+
+57-
+
+@CircuitBreaker en Orderservice
+
+Uso de CompletableFuture<String>, para trabajar en forma asincrona
+
+Uso de @SneakyTrhows, es anotacion de lombok que oculta estructura try-catch
+
+se puede usar log.info con solo agregar annotation @slf4j
+
+prueb en postman: recordar que se hace con OAUTH2
+
+la prueba fallida que inteto se realizo, segun app.porpeties de order-Service ms , se hizo con 3 intentos attempts de 5 de duracion.
+habia hecho un @retry de app.properties.
+
+
+
+  
+
+
+
+
+
+
+   

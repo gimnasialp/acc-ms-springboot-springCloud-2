@@ -1,0 +1,17 @@
+monitoreo prhoeteus y grafana
+
+meticas de sistema,memoria usada etc , esto con prometheu
+
+actuator. ppiedades de la app, grafana y promth los usa.
+
+localhost:9090 promth
+
+ipconfig
+
+wifi - ipv24
+
+logbacks_events_total en prmth
+
+vamos a grafana , http://localhost:3000/dashboard/import , creo datasource con url 192.168.1.2:9090 descargo json plugin springboot apm y demas
+
+
